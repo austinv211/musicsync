@@ -1,14 +1,24 @@
-version: '3'
+version: '3.7'
 
 services:
   db:
     image: postgres
+    env_file: 
+      - .env
+    restart: always
+    volumes: 
+      - db-data:/var/lib/postgresql/data
   web:
     build: .
     command: python3 musicsync/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     depends_on: 
       - db
+
+volumes:
+  db-data:
