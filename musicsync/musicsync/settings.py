@@ -11,9 +11,20 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from .settings_dev import DATABASES as DEV_DATABASES, CHANNEL_LAYERS as DEV_CHANNEL_LAYERS
+from .settings_prod import DATABASES as PROD_DATABASES, CHANNEL_LAYERS as PROD_CHANNEL_LAYERS
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Get the environment type variable
+ENVIRONMENT_TYPE = os.environ.get('ENV_TYPE', default='DEV') 
+
+# conditionally import the settings
+if ENVIRONMENT_TYPE == 'DEV':
+    DATABASES = DEV_DATABASES
+    CHANNEL_LAYERS = DEV_CHANNEL_LAYERS
+else:
+    DATABASES = PROD_DATABASES
+    CHANNEL_LAYERS = PROD_CHANNEL_LAYERS
 
 
 # Quick-start development settings - unsuitable for production
@@ -75,44 +86,7 @@ ASGI_APPLICATION = 'musicsync.routing.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-ENVIRONMENT_TYPE = os.environ.get('ENV_TYPE', default='DEV')
-
-if ENVIRONMENT_TYPE and ENVIRONMENT_TYPE == 'PROD':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('POSGRES_DB'),
-            'USER': os.environ.get('POSTGRES_USER'),
-            'HOST': os.environ.get('POSTGRES_HOST'),
-            'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-            'PORT': 5432,
-        }
-    }
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels_redis.core.RedisChannelLayer',
-            'CONFIG': {
-                "hosts": [('musicsync_redis_1', 6379)],
-            },
-        }
-    }   
-elif ENVIRONMENT_TYPE == 'DEV':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels_redis.core.RedisChannelLayer',
-            'CONFIG': {
-                "hosts": [('127.0.0.1', 6379)],
-            },
-        }
-    }   
+# https://docs.djangoproject.com/en/2.2/ref/settings/#databases 
 
 
 # Password validation

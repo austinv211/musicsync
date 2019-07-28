@@ -3,8 +3,6 @@ LABEL maintainer="Austin Vargason"
 ENV PYTHONBUFFERED 1
 RUN mkdir /code
 WORKDIR /code
-RUN mkdir ./requirements
-COPY ./requirements/ /code/requirements/
-RUN python3 -m pip install --upgrade pip
+COPY ./requirements/ /code/requirements
 RUN python3 -m pip install -r requirements/base.txt
-COPY . /code/
+COPY ./musicsync/ /code/musicsync
