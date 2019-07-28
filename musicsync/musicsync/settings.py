@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels'
+    'channels',
+    'chat'
 ]
 
 MIDDLEWARE = [
@@ -69,21 +70,49 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'musicsync.wsgi.application'
+
 ASGI_APPLICATION = 'musicsync.routing.application'
+
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'HOST': os.environ.get('POSTGRES_HOST'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'PORT': 5432,
+ENVIRONMENT_TYPE = os.environ.get('ENV_TYPE', default='DEV')
+
+if ENVIRONMENT_TYPE and ENVIRONMENT_TYPE == 'PROD':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSGRES_DB'),
+            'USER': os.environ.get('POSTGRES_USER'),
+            'HOST': os.environ.get('POSTGRES_HOST'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+            'PORT': 5432,
+        }
     }
-}
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [('musicsync_redis_1', 6379)],
+            },
+        }
+    }   
+elif ENVIRONMENT_TYPE == 'DEV':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [('127.0.0.1', 6379)],
+            },
+        }
+    }   
 
 
 # Password validation
