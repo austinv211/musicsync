@@ -1,4 +1,2 @@
-Django>=2.0,<3.0
+-r base.txt
 psycopg2-binary>=2.7,<3.0
-channels>=2.0,<3.0
-channels_redis
