@@ -4,3 +4,4 @@ virtualenv
 __pycache__
 .vscode
 .env
+node_modules
